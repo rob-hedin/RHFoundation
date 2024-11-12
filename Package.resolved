@@ -1,0 +1,15 @@
+{
+  "originHash" : "d42e1f54dc8203d097e2677e722e3fcb19466d7df4ee4f70c77a3a5d5ff7ce2f",
+  "pins" : [
+    {
+      "identity" : "foil",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jessesquires/Foil.git",
+      "state" : {
+        "revision" : "b7839568d23a05614d97d053a450ca88541fe4a5",
+        "version" : "6.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}
