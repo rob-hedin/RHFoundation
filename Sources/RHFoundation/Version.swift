@@ -162,17 +162,17 @@ public class Version {
         minor = (normalizedVersionNumber % 10000) / 100
         release = normalizedVersionNumber % 100
 
-        let minorString = minor.formatted(.number.precision(.integerLength(2)))
+//        let minorString = minor.formatted(.number.precision(.integerLength(2)))
 
         // now output the version number
         if release == 0,
            stripReleaseIfZero == true {
-            return "\(major).\(minorString)"
+            return "\(major).\(minor)"
         }
         
         // we are outputting the release
-        let releaseString = release.formatted(.number.precision(.integerLength(2)))
-        return "\(major).\(minorString).\(releaseString)"
+//        let releaseString = release.formatted(.number.precision(.integerLength(2)))
+        return "\(major).\(minor).\(release)"
     }
 }
 

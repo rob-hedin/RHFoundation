@@ -32,17 +32,26 @@ public final class AppVersion {
     // MARK: - Singleton Accessor
     
     /// Accessor for the Singleton instance.
-    public static let sharedInstance = AppVersion()
-    
+    public static let shared = {
+        return AppVersion()
+    }()
     
     
     // MARK: - Public Properties
     
     /// The version number used for the last session of the app.
-    var lastVersion: Version = Version()
+    var lastVersion: Version = Version() {
+        didSet {
+            normalizedLastVersion = lastVersion.normalizedVersionNumber
+        }
+    }
     
     /// The version number used by the current session of the app.
-    var currentVersion: Version = Version()
+    var currentVersion: Version = Version() {
+        didSet {
+            normalizedCurrentVersion = currentVersion.normalizedVersionNumber
+        }
+    }
     
     /// The total number of times the application was started.
     @FoilDefaultStorage(key: "totalNumberOfLaunches")
@@ -84,7 +93,7 @@ public final class AppVersion {
     // MARK: - Initializers
     
     /// The designated initializer.
-    private init() {
+    fileprivate init() {
         // Load any previous version info
         lastVersion = Version(normalizedVersionNumber: self.normalizedLastVersion)
         currentVersion = Version(normalizedVersionNumber: self.normalizedCurrentVersion)
@@ -94,6 +103,7 @@ public final class AppVersion {
 
         // setup the current version
         currentVersion = Bundle.applicationVersionNumber
+        normalizedCurrentVersion = currentVersion.normalizedVersionNumber
         
         // is this our first time launch?
         if self.lastVersion.isValid {
@@ -170,17 +180,9 @@ public final class AppVersion {
     
     /// The normalized version number used for the last session of the app.
     @FoilDefaultStorage(key: "normalizedLastVersion")
-    private var normalizedLastVersion: Int = 0 {
-        didSet {
-            lastVersion = Version(normalizedVersionNumber: normalizedLastVersion)
-        }
-    }
+    private var normalizedLastVersion: Int = 0
 
     /// The normalized version number used by the current session of the app.
     @FoilDefaultStorage(key: "normalizedCurrentVersion")
-    private var normalizedCurrentVersion: Int = 0 {
-        didSet {
-            currentVersion = Version(normalizedVersionNumber: normalizedLastVersion)
-        }
-    }
+    private var normalizedCurrentVersion: Int = 0 
 }
