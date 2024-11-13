@@ -127,7 +127,7 @@ public final class AppVersion {
                 
                 // and reset our counts...
                 versionInfo.numberOfLaunchesForThisVersion = 1
-                versionInfo.numberOfSessionsForThisVersion = 1
+                versionInfo.numberOfSessionsForThisVersion = 0
                 
                 // ...and dates
                 versionInfo.dateThisVersionInstalled = today
