@@ -25,7 +25,7 @@
 import Foundation
 
 
-extension Locale {
+public extension Locale {
     /// retrieves the (friendly) language name for the current locale.
     ///
     /// - Returns: the language name for the current locale.
