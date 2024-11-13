@@ -111,8 +111,8 @@ public final class AppVersion {
         // setup launch and session counts
         totalNumberOfLaunches += 1
         numberOfLaunchesForThisVersion += 1
-        totalNumberOfSessions += 1
-        numberOfSessionsForThisVersion += 1
+//        totalNumberOfSessions += 1
+//        numberOfSessionsForThisVersion += 1
         
         // determine if this is an upgrade
         // an initial install is not considered an upgrade
