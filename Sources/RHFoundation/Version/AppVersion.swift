@@ -22,17 +22,14 @@
 //
 
 import Foundation
-import Foil
-import UIKit
 
 
-@MainActor
 public final class AppVersion {
     
     // MARK: - Singleton Accessor
     
     /// Accessor for the Singleton instance.
-    public static let shared = {
+    nonisolated(unsafe) public static let shared = {
         return AppVersion()
     }()
     
@@ -40,36 +37,44 @@ public final class AppVersion {
     // MARK: - Public Properties
     
     /// The version number used for the last session of the app.
-    var lastVersion: Version = Version()
-    
-    /// The version number used by the current session of the app.
-    var currentVersion: Version = Version()
+    public var lastVersion: Version {
+        versionInfo.lastVersion
+    }
     
     /// The total number of times the application was started.
-    @FoilDefaultStorage(key: "totalNumberOfLaunches")
-    private(set) var totalNumberOfLaunches: Int = 0
+    public var totalNumberOfLaunches: Int {
+        versionInfo.totalNumberOfLaunches
+    }
     
     /// The number of times this version of the app was started.
-    @FoilDefaultStorage(key: "numberOfLaunchesForThisVersion")
-    private(set) var numberOfLaunchesForThisVersion: Int = 0
+    public var numberOfLaunchesForThisVersion: Int {
+        versionInfo.numberOfLaunchesForThisVersion
+    }
     
     /// The total number of discrete user sessions since the initial install of the app.
-    @FoilDefaultStorage(key: "totalNumberOfSessions")
-    private(set) var totalNumberOfSessions: Int = 0
+    public var totalNumberOfSessions: Int {
+        versionInfo.totalNumberOfSessions
+    }
     
     /// The number of discrete user sessions since this specific version of the app was installed.
-    @FoilDefaultStorage(key: "numberOfSessionsForThisVersion")
-    private(set) var numberOfSessionsForThisVersion: Int = 0
+    public var numberOfSessionsForThisVersion: Int {
+        versionInfo.numberOfSessionsForThisVersion
+    }
     
     /// The date the app was initially installed.
-    private(set) var dateFirstInstalled: Date = Date.now
+    public var dateFirstInstalled: Date  {
+        versionInfo.dateFirstInstalled
+    }
     
     /// The date this specific version of the app was installed.
-    private(set) var dateThisVersionInstalled: Date = Date.now
+    public var dateThisVersionInstalled: Date  {
+        versionInfo.dateThisVersionInstalled
+    }
     
     /// The date the app was last used before the current session.
-    private(set) var appLastUsedOn: Date = Date.now
-
+    public var appLastUsedOn: Date  {
+        versionInfo.appLastUsedOn
+    }
     
     /// Indicates if this session is during the First Time Launch of the app.
     public private(set) var firstTimeLaunch = true
@@ -86,16 +91,14 @@ public final class AppVersion {
     
     /// The designated initializer.
     fileprivate init() {
-        // Load any previous version info
-        lastVersion = Version(normalizedVersionNumber: self.normalizedLastVersion)
-        currentVersion = Version(normalizedVersionNumber: self.normalizedCurrentVersion)
+        // load any data we've had in the past
+        self.versionInfo = VersionInfo.load()
         
         // get the date for later use
         let today = Date.now
 
         // setup the current version
-        currentVersion = Bundle.applicationVersionNumber
-        normalizedCurrentVersion = currentVersion.normalizedVersionNumber
+        let currentVersion = Bundle.applicationVersionNumber
         
         // is this our first time launch?
         if self.lastVersion.isValid {
@@ -103,16 +106,14 @@ public final class AppVersion {
             firstTimeLaunch = false
         } else {
             // must be a first time launch
-            self.lastVersion = currentVersion
-            dateFirstInstalled = today
-            dateThisVersionInstalled = today
+            versionInfo.lastVersion = currentVersion
+            versionInfo.dateFirstInstalled = today
+            versionInfo.dateThisVersionInstalled = today
         }
         
-        // setup launch and session counts
-        totalNumberOfLaunches += 1
-        numberOfLaunchesForThisVersion += 1
-//        totalNumberOfSessions += 1
-//        numberOfSessionsForThisVersion += 1
+        // setup launch counts
+        versionInfo.totalNumberOfLaunches += 1
+        versionInfo.numberOfLaunchesForThisVersion += 1
         
         // determine if this is an upgrade
         // an initial install is not considered an upgrade
@@ -125,20 +126,22 @@ public final class AppVersion {
                 launchAfterUpgrade = true
                 
                 // and reset our counts...
-                numberOfLaunchesForThisVersion = 1
-                numberOfSessionsForThisVersion = 1
+                versionInfo.numberOfLaunchesForThisVersion = 1
+                versionInfo.numberOfSessionsForThisVersion = 1
                 
                 // ...and dates
-                dateThisVersionInstalled = today
+                versionInfo.dateThisVersionInstalled = today
             }
         }
         
         // now update today's info
-        appLastUsedOn = today
+        versionInfo.appLastUsedOn = today
 
-        // and make sure to update the last version ran to be the current version
-        self.lastVersion = currentVersion
-        normalizedLastVersion = lastVersion.normalizedVersionNumber
+        // make sure to update the last version ran to be the current version
+        versionInfo.lastVersion = currentVersion
+        
+        // and save the info
+        versionInfo.save()
     }
     
     
@@ -147,15 +150,18 @@ public final class AppVersion {
     
     public func enterForeground() {
         // update our use counts
-        self.totalNumberOfSessions += 1
-        self.numberOfSessionsForThisVersion += 1
+        versionInfo.totalNumberOfSessions += 1
+        versionInfo.numberOfSessionsForThisVersion += 1
+        
+        // and store it
+        versionInfo.save()
     }
     
     
     
     public func enterBackground() {
         // update the last ran version whenever the app goes to the background
-        self.lastVersion = self.currentVersion
+        versionInfo.lastVersion = Bundle.applicationVersionNumber
         
         // we can no longer be performing a first time
         // launch or an upgrade launch if we're going to the
@@ -163,19 +169,16 @@ public final class AppVersion {
         self.firstTimeLaunch = false
         self.launchAfterUpgrade = false
         
-        // and update the date this version was used
-        self.appLastUsedOn = Date.now
+        // update the date this version was used
+        versionInfo.appLastUsedOn = Date.now
+        
+        // and store it
+        versionInfo.save()
     }
     
     
     
     // MARK: - Private Properties
     
-    /// The normalized version number used for the last session of the app.
-    @FoilDefaultStorage(key: "normalizedLastVersion")
-    private var normalizedLastVersion: Int = 0
-
-    /// The normalized version number used by the current session of the app.
-    @FoilDefaultStorage(key: "normalizedCurrentVersion")
-    private var normalizedCurrentVersion: Int = 0 
+    private var versionInfo: VersionInfo
 }

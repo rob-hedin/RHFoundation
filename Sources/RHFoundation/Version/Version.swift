@@ -27,7 +27,7 @@ import os
 
 
 /// defines a standard way of looking at version numbers using semantic versioning
-public class Version {
+public class Version: Codable {
     
     // MARK: - Public Properties
     /// A string representation of a version number.
@@ -87,8 +87,12 @@ public class Version {
     ///
     /// - Parameters:
     ///     - version: The string representation of the version number to be converted
-    public init( version: String ) {
-        normalizedVersionNumber = Version.normalizeVersionNumber(version)
+    public init( _ version: String? ) {
+        var realVersion = 0
+        if let version {
+            realVersion = Version.normalizeVersionNumber(version)
+        }
+        normalizedVersionNumber = realVersion
     }
 
     
