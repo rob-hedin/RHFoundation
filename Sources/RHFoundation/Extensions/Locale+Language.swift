@@ -50,4 +50,12 @@ public extension Locale {
         }
         return localizedString(forRegionCode: regionCode)
     }
+    
+    
+    /// Returns a friendly description for the local (eg, instead of `en_US` it will return "English (United States)").
+    var friendlyDescription: String {
+        let languageName: String = localizedCurrentLanguageName ?? language.languageCode?.identifier ?? ""
+        let regionName: String = localizedCurrentRegionName ?? region?.identifier ?? ""
+        return "\(languageName) (\(regionName))"
+    }
 }
