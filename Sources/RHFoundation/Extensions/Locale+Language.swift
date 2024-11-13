@@ -37,4 +37,17 @@ public extension Locale {
         }
         return localizedString(forLanguageCode: languageCode)
     }
+
+
+    /// retrieves the (friendly) region name for the current locale.
+    ///
+    /// - Returns: the language name for the current locale.
+    ///
+    /// - Note: `en_US` will return "English"
+    var localizedCurrentRegionName: String? {
+        guard let regionCode = language.region?.identifier else {
+            return nil
+        }
+        return localizedString(forRegionCode: regionCode)
+    }
 }
