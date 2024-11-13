@@ -76,12 +76,14 @@ internal struct VersionInfo: Codable {
     static internal func load() -> VersionInfo {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        do {
-            let data: Data = try Data(contentsOf: path)
-            let decodedVersionInfo: VersionInfo = try decoder.decode(VersionInfo.self, from: data)
-            return decodedVersionInfo
-        } catch {
-            logger.error("Failed to decode JSON data: \(error.localizedDescription)")
+        if FileManager.default.fileExists(atPath: Self.path.absoluteString) {
+            do {
+                let data: Data = try Data(contentsOf: path)
+                let decodedVersionInfo: VersionInfo = try decoder.decode(VersionInfo.self, from: data)
+                return decodedVersionInfo
+            } catch {
+                logger.error("Failed to decode JSON data: \(error.localizedDescription)")
+            }
         }
         return VersionInfo()
     }
