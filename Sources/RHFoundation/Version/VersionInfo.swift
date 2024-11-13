@@ -62,9 +62,10 @@ internal struct VersionInfo: Codable {
         if let encodedData = try? encoder.encode(self) {
             do {
                 try encodedData.write(to: Self.path)
+                logger.info("VersionInfo file saved to: \(Self.path)")
             }
             catch {
-                logger.error("Failed to write JSON data: \(error.localizedDescription)")
+                logger.error("Failed to write VersionInfo JSON data: \(error.localizedDescription)")
             }
         }
     }
@@ -76,14 +77,16 @@ internal struct VersionInfo: Codable {
     static internal func load() -> VersionInfo {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        if FileManager.default.fileExists(atPath: Self.path.absoluteString) {
+        if FileManager.default.fileExists(at: Self.path) {
             do {
                 let data: Data = try Data(contentsOf: path)
                 let decodedVersionInfo: VersionInfo = try decoder.decode(VersionInfo.self, from: data)
                 return decodedVersionInfo
             } catch {
-                logger.error("Failed to decode JSON data: \(error.localizedDescription)")
+                logger.error("Failed to decode JSON VersionInfo data: \(error.localizedDescription)")
             }
+        } else {
+            logger.info("VersionInfo file not found at: \(path)")
         }
         return VersionInfo()
     }
