@@ -40,18 +40,10 @@ public final class AppVersion {
     // MARK: - Public Properties
     
     /// The version number used for the last session of the app.
-    var lastVersion: Version = Version() {
-        didSet {
-            normalizedLastVersion = lastVersion.normalizedVersionNumber
-        }
-    }
+    var lastVersion: Version = Version()
     
     /// The version number used by the current session of the app.
-    var currentVersion: Version = Version() {
-        didSet {
-            normalizedCurrentVersion = currentVersion.normalizedVersionNumber
-        }
-    }
+    var currentVersion: Version = Version()
     
     /// The total number of times the application was started.
     @FoilDefaultStorage(key: "totalNumberOfLaunches")
@@ -146,6 +138,7 @@ public final class AppVersion {
 
         // and make sure to update the last version ran to be the current version
         self.lastVersion = currentVersion
+        normalizedLastVersion = lastVersion.normalizedVersionNumber
     }
     
     
