@@ -94,5 +94,5 @@ internal struct VersionInfo: Codable {
     
     // MARK: - Private Properties
     
-    private static let path: URL = URL.documentsDirectory.appendingPathComponent("VersionInfo.json")
+    private static let path: URL = URL.applicationSupportDirectory.appendingPathComponent("VersionInfo.json")
 }
